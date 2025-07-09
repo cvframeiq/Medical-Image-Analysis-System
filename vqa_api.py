@@ -18,7 +18,7 @@ def get_vqa_answer(image_path, question):
 
         # API headers
         headers = {
-            "Authorization": "Bearer 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",
+            "Authorization": "Bearer THE-API-KEY",
             "Content-Type": "application/json"
         }
 
