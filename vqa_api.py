@@ -1,53 +1,64 @@
-
 import requests
 import base64
 import json
-from PIL import Image
 import os
 
-# Function to send image + question 
+# Function to send image and question to OpenRouter's GPT-4o
 def get_vqa_answer(image_path, question):
+    # Safety check
+    if not os.path.exists(image_path):
+        return " Image not found."
+    if not question.strip():
+        return " No question provided."
 
-     # Open the image in binary mode and convert it to base64
-    with open(image_path, "rb") as image_file:
-        base64_image = base64.b64encode(image_file.read()).decode("utf-8")
+    try:
+        # Encode image to base64
+        with open(image_path, "rb") as image_file:
+            base64_image = base64.b64encode(image_file.read()).decode("utf-8")
 
-    # auth token and content type
-    headers = {
-        "Authorization": "Bearer THE-API-KEY",  
-        "Content-Type": "application/json"
-    }
+        # API headers
+        headers = {
+            "Authorization": "Bearer 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",
+            "Content-Type": "application/json"
+        }
 
-    # request payload with the model,question , and the image
-    payload = {
-        "model": "openai/gpt-4o",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": question},
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            # Send the image as base64-encoded string
-                            "url": f"data:image/jpeg;base64,{base64_image}"
+        # Payload for GPT-4o with image + question
+        payload = {
+            "model": "openai/gpt-4o",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": question},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            },
                         },
-                    },
-                ],
-            }
-        ],
-        "max_tokens": 300
-    }
+                    ],
+                }
+            ],
+            "max_tokens": 300
+        }
 
-    # POST request to the OpenRouter API
-    response = requests.post("https://openrouter.ai/api/v1/chat/completions",
-                             headers=headers, data=json.dumps(payload))
+        # Send POST request
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            data=json.dumps(payload)
+        )
 
-    if response.status_code == 200:
-        result = response.json()
-        answer = result['choices'][0]['message']['content']
-        return answer
-    else:
-        print(f"[Error] Status Code: {response.status_code}")
-        print(response.text)
-        return None
+        # Parse response
+        if response.status_code == 200:
+            result = response.json()
+            return result['choices'][0]['message']['content']
+        else:
+            print(f"[Error] Status Code: {response.status_code}")
+            print(response.text)
+            return f" API Error: {response.status_code} – see console."
+
+    except Exception as e:
+        print(f"[Exception] {e}")
+        return " Failed to process the image or send the request."
+

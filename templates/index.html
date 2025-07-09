@@ -114,7 +114,6 @@
             color: #888;
         }
 
-        /* ✅ NEW STYLING FOR RESULT SECTION */
         .result-box .label,
         .result-box .question strong,
         .result-box .answer strong {
@@ -136,32 +135,30 @@
     </style>
 </head>
 <body>
-    <h1>Medical Image Analysis System </h1>
+    <h1>Medical Image Analysis System</h1>
     <div class="form-container">
         <form action="/result" method="POST" enctype="multipart/form-data">
-            <!-- Upload Image -->
             <div class="form-group">
                 <label for="image-upload">Upload Image:</label>
                 <input type="file" id="image-upload" name="image" required>
             </div>
 
-            <!-- Question -->
             <div class="form-group">
                 <label for="question-input">Question:</label>
-                <textarea id="question-input" name="question" placeholder="Ask the question about image...." rows="4" required></textarea>
+                <textarea id="question-input" name="question" placeholder="Ask the question about image...." rows="4" required>{{ question or '' }}</textarea>
             </div>
 
             <button type="submit">Get Answer</button>
         </form>
 
-        {% if answer %}
+        {% if answer_html %}
         <hr style="margin: 40px 0;">
         <div class="result-box">
-            <div class="label">Uploaded Image : </div>
+            <div class="label">Uploaded Image:</div>
             <img src="{{ image_url }}" alt="Uploaded Image">
 
             <p class="question"><strong>Question: <br></strong> {{ question }}</p>
-            <p class="answer"><strong>Answer: <br></strong> {{ answer }}</p>
+            <p class="answer"><strong>Answer: <br></strong> <span>{{ answer_html | safe }}</span></p>
         </div>
         {% endif %}
     </div>

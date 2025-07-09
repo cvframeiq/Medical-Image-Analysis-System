@@ -43,7 +43,7 @@ This project is a simple web application that allows users to upload an image an
 - Run the Flask app:
 
   ```bash
-  cd "Visual-question-answering"
+  cd "Medical-Image-Analysis-System"
   python app.py
   ```
 
